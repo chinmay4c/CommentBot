@@ -56,10 +56,14 @@ function createCommentElement(text) {
     replyInputDiv.appendChild(replyTextarea);
     replyInputDiv.appendChild(postReplyButton);
 
+    const replyContainerDiv = document.createElement('div');
+    replyContainerDiv.classList.add('reply-container');
+
     commentBodyDiv.appendChild(commentText);
     commentDiv.appendChild(commentBodyDiv);
     commentDiv.appendChild(commentActionsDiv);
     commentDiv.appendChild(replyInputDiv);
+    commentDiv.appendChild(replyContainerDiv);
 
     return commentDiv;
 }
@@ -76,22 +80,25 @@ function postReply(replyText, commentDiv, replyInputDiv) {
     if (replyText.trim() === '') return;
 
     const replyDiv = document.createElement('div');
-    replyDiv.classList.add('comment-body');
-    replyDiv.style.marginLeft = '20px';
+    replyDiv.classList.add('comment');
     const replyTextP = document.createElement('p');
     replyTextP.textContent = replyText;
 
-    const deleteReplyButton = document.createElement('button');
+    const deleteReplyButton = document.createElement('span');
     deleteReplyButton.textContent = 'Delete';
+    deleteReplyButton.style.float = 'right';
+    deleteReplyButton.style.cursor = 'pointer';
+    deleteReplyButton.style.color = '#007bff';
     deleteReplyButton.onclick = function () {
         replyDiv.remove();
     };
-    deleteReplyButton.style.marginLeft = '10px';
 
     replyDiv.appendChild(replyTextP);
     replyDiv.appendChild(deleteReplyButton);
 
-    commentDiv.insertBefore(replyDiv, replyInputDiv);
+    const replyContainerDiv = commentDiv.querySelector('.reply-container');
+    replyContainerDiv.appendChild(replyDiv);
+
     replyInputDiv.style.display = 'none';
     replyInputDiv.querySelector('textarea').value = '';
 
@@ -129,7 +136,7 @@ function editComment(commentDiv, commentText, commentActionsDiv) {
 }
 
 function updateReplyCount(commentDiv) {
-    const replyCount = commentDiv.querySelectorAll('.comment-body').length - 1;
+    const replyCount = commentDiv.querySelectorAll('.reply-container .comment').length;
     let replyCountSpan = commentDiv.querySelector('.reply-count');
 
     if (!replyCountSpan) {
