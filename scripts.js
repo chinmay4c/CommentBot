@@ -1,149 +1,81 @@
-function addComment() {
-    const commentText = document.getElementById('new-comment').value;
-    if (commentText.trim() === '') return;
+document.addEventListener('DOMContentLoaded', () => {
+    const commentInput = document.getElementById('new-comment');
+    const commentsList = document.getElementById('comments-list');
 
-    const commentElement = createCommentElement(commentText);
-    document.getElementById('comments-list').appendChild(commentElement);
-    document.getElementById('new-comment').value = '';
-}
+    document.querySelector('.comment-input button').addEventListener('click', () => {
+        if (commentInput.value.trim()) {
+            addComment(commentInput.value.trim());
+            commentInput.value = '';
+        }
+    });
 
-function createCommentElement(text) {
-    const commentDiv = document.createElement('div');
-    commentDiv.classList.add('comment');
+    function addComment(text) {
+        const commentElement = createCommentElement(text);
+        commentsList.appendChild(commentElement);
+        commentElement.scrollIntoView({ behavior: 'smooth' });
+    }
 
-    const commentBodyDiv = document.createElement('div');
-    commentBodyDiv.classList.add('comment-body');
-    const commentText = document.createElement('p');
-    commentText.textContent = text;
+    function createCommentElement(text) {
+        const commentDiv = createElement('div', 'comment');
+        const commentBodyDiv = createElement('div', 'comment-body');
+        const commentText = createElement('p', null, text);
 
-    const commentActionsDiv = document.createElement('div');
-    commentActionsDiv.classList.add('comment-actions');
+        const commentActionsDiv = createActions(['Reply', 'Edit', 'Delete'], [
+            () => toggleReplyInput(replyInputDiv),
+            () => editComment(commentDiv, commentText, commentActionsDiv),
+            () => commentDiv.remove()
+        ]);
 
-    const replyButton = document.createElement('span');
-    replyButton.textContent = 'Reply';
-    replyButton.onclick = function () {
-        toggleReplyInput(replyInputDiv);
-    };
+        const replyInputDiv = createReplyInput(commentDiv);
 
-    const editButton = document.createElement('span');
-    editButton.textContent = 'Edit';
-    editButton.onclick = function () {
-        editComment(commentDiv, commentText, commentActionsDiv);
-    };
+        commentBodyDiv.appendChild(commentText);
+        commentDiv.append(commentBodyDiv, commentActionsDiv, replyInputDiv, createElement('div', 'reply-container'));
 
-    const deleteButton = document.createElement('span');
-    deleteButton.textContent = 'Delete';
-    deleteButton.onclick = function () {
-        commentDiv.remove();
-    };
+        return commentDiv;
+    }
 
-    commentActionsDiv.appendChild(replyButton);
-    commentActionsDiv.appendChild(editButton);
-    commentActionsDiv.appendChild(deleteButton);
+    function createActions(actions, handlers) {
+        const actionsDiv = createElement('div', 'comment-actions');
+        actions.forEach((action, index) => {
+            const actionSpan = createElement('span', null, action);
+            actionSpan.addEventListener('click', handlers[index]);
+            actionsDiv.appendChild(actionSpan);
+        });
+        return actionsDiv;
+    }
 
-    const replyInputDiv = document.createElement('div');
-    replyInputDiv.classList.add('reply-input');
+    function createReplyInput(commentDiv) {
+        const replyInputDiv = createElement('div', 'reply-input');
+        const replyTextarea = createElement('textarea', null, null, { placeholder: 'Reply to this comment...' });
+        const postReplyButton = createElement('button', null, 'Post Reply');
 
-    const replyTextarea = document.createElement('textarea');
-    replyTextarea.placeholder = 'Reply to this comment...';
+        postReplyButton.addEventListener('click', () => {
+            if (replyTextarea.value.trim()) {
+                postReply(replyTextarea.value.trim(), commentDiv, replyInputDiv);
+                replyTextarea.value = '';
+            }
+        });
 
-    const postReplyButton = document.createElement('button');
-    postReplyButton.textContent = 'Post Reply';
-    postReplyButton.onclick = function () {
-        postReply(replyTextarea.value, commentDiv, replyInputDiv);
-    };
+        replyInputDiv.append(replyTextarea, postReplyButton);
+        return replyInputDiv;
+    }
 
-    replyInputDiv.appendChild(replyTextarea);
-    replyInputDiv.appendChild(postReplyButton);
-
-    const replyContainerDiv = document.createElement('div');
-    replyContainerDiv.classList.add('reply-container');
-
-    commentBodyDiv.appendChild(commentText);
-    commentDiv.appendChild(commentBodyDiv);
-    commentDiv.appendChild(commentActionsDiv);
-    commentDiv.appendChild(replyInputDiv);
-    commentDiv.appendChild(replyContainerDiv);
-
-    return commentDiv;
-}
-
-function toggleReplyInput(replyInputDiv) {
-    if (replyInputDiv.style.display === 'none' || replyInputDiv.style.display === '') {
-        replyInputDiv.style.display = 'block';
-    } else {
+    function postReply(text, commentDiv, replyInputDiv) {
+        const replyContainerDiv = commentDiv.querySelector('.reply-container');
+        const replyDiv = createCommentElement(text);
+        replyContainerDiv.appendChild(replyDiv);
         replyInputDiv.style.display = 'none';
-    }
-}
-
-function postReply(replyText, commentDiv, replyInputDiv) {
-    if (replyText.trim() === '') return;
-
-    const replyDiv = document.createElement('div');
-    replyDiv.classList.add('comment');
-    const replyTextP = document.createElement('p');
-    replyTextP.textContent = replyText;
-
-    const deleteReplyButton = document.createElement('span');
-    deleteReplyButton.textContent = 'Delete';
-    deleteReplyButton.style.float = 'right';
-    deleteReplyButton.style.cursor = 'pointer';
-    deleteReplyButton.style.color = '#007bff';
-    deleteReplyButton.onclick = function () {
-        replyDiv.remove();
-    };
-
-    replyDiv.appendChild(replyTextP);
-    replyDiv.appendChild(deleteReplyButton);
-
-    const replyContainerDiv = commentDiv.querySelector('.reply-container');
-    replyContainerDiv.appendChild(replyDiv);
-
-    replyInputDiv.style.display = 'none';
-    replyInputDiv.querySelector('textarea').value = '';
-
-    updateReplyCount(commentDiv);
-}
-
-function editComment(commentDiv, commentText, commentActionsDiv) {
-    const editInputDiv = document.createElement('div');
-    editInputDiv.classList.add('edit-input');
-
-    const editTextarea = document.createElement('textarea');
-    editTextarea.value = commentText.textContent;
-
-    const saveEditButton = document.createElement('button');
-    saveEditButton.textContent = 'Save';
-    saveEditButton.onclick = function () {
-        commentText.textContent = editTextarea.value;
-        editInputDiv.remove();
-        commentActionsDiv.style.display = 'flex';
-    };
-
-    const cancelEditButton = document.createElement('button');
-    cancelEditButton.textContent = 'Cancel';
-    cancelEditButton.onclick = function () {
-        editInputDiv.remove();
-        commentActionsDiv.style.display = 'flex';
-    };
-
-    editInputDiv.appendChild(editTextarea);
-    editInputDiv.appendChild(saveEditButton);
-    editInputDiv.appendChild(cancelEditButton);
-
-    commentDiv.appendChild(editInputDiv);
-    commentActionsDiv.style.display = 'none';
-}
-
-function updateReplyCount(commentDiv) {
-    const replyCount = commentDiv.querySelectorAll('.reply-container .comment').length;
-    let replyCountSpan = commentDiv.querySelector('.reply-count');
-
-    if (!replyCountSpan) {
-        replyCountSpan = document.createElement('span');
-        replyCountSpan.classList.add('reply-count');
-        commentDiv.querySelector('.comment-actions').appendChild(replyCountSpan);
+        updateReplyCount(commentDiv);
+        replyDiv.scrollIntoView({ behavior: 'smooth' });
     }
 
-    replyCountSpan.textContent = `${replyCount} replies`;
-}
+    
+
+    function createElement(tag, className, textContent = '', attributes = {}) {
+        const element = document.createElement(tag);
+        if (className) element.className = className;
+        if (textContent) element.textContent = textContent;
+        Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
+        return element;
+    }
+});
