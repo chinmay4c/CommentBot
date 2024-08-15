@@ -13,13 +13,33 @@ function createCommentElement(text) {
 
     const commentBodyDiv = document.createElement('div');
     commentBodyDiv.classList.add('comment-body');
-    commentBodyDiv.textContent = text;
+    const commentText = document.createElement('p');
+    commentText.textContent = text;
 
-    const replyButton = document.createElement('button');
+    const commentActionsDiv = document.createElement('div');
+    commentActionsDiv.classList.add('comment-actions');
+
+    const replyButton = document.createElement('span');
     replyButton.textContent = 'Reply';
     replyButton.onclick = function () {
         toggleReplyInput(replyInputDiv);
     };
+
+    const editButton = document.createElement('span');
+    editButton.textContent = 'Edit';
+    editButton.onclick = function () {
+        editComment(commentDiv, commentText, commentActionsDiv);
+    };
+
+    const deleteButton = document.createElement('span');
+    deleteButton.textContent = 'Delete';
+    deleteButton.onclick = function () {
+        commentDiv.remove();
+    };
+
+    commentActionsDiv.appendChild(replyButton);
+    commentActionsDiv.appendChild(editButton);
+    commentActionsDiv.appendChild(deleteButton);
 
     const replyInputDiv = document.createElement('div');
     replyInputDiv.classList.add('reply-input');
@@ -36,8 +56,9 @@ function createCommentElement(text) {
     replyInputDiv.appendChild(replyTextarea);
     replyInputDiv.appendChild(postReplyButton);
 
+    commentBodyDiv.appendChild(commentText);
     commentDiv.appendChild(commentBodyDiv);
-    commentDiv.appendChild(replyButton);
+    commentDiv.appendChild(commentActionsDiv);
     commentDiv.appendChild(replyInputDiv);
 
     return commentDiv;
@@ -57,9 +78,65 @@ function postReply(replyText, commentDiv, replyInputDiv) {
     const replyDiv = document.createElement('div');
     replyDiv.classList.add('comment-body');
     replyDiv.style.marginLeft = '20px';
-    replyDiv.textContent = replyText;
+    const replyTextP = document.createElement('p');
+    replyTextP.textContent = replyText;
+
+    const deleteReplyButton = document.createElement('button');
+    deleteReplyButton.textContent = 'Delete';
+    deleteReplyButton.onclick = function () {
+        replyDiv.remove();
+    };
+    deleteReplyButton.style.marginLeft = '10px';
+
+    replyDiv.appendChild(replyTextP);
+    replyDiv.appendChild(deleteReplyButton);
 
     commentDiv.insertBefore(replyDiv, replyInputDiv);
     replyInputDiv.style.display = 'none';
     replyInputDiv.querySelector('textarea').value = '';
+
+    updateReplyCount(commentDiv);
+}
+
+function editComment(commentDiv, commentText, commentActionsDiv) {
+    const editInputDiv = document.createElement('div');
+    editInputDiv.classList.add('edit-input');
+
+    const editTextarea = document.createElement('textarea');
+    editTextarea.value = commentText.textContent;
+
+    const saveEditButton = document.createElement('button');
+    saveEditButton.textContent = 'Save';
+    saveEditButton.onclick = function () {
+        commentText.textContent = editTextarea.value;
+        editInputDiv.remove();
+        commentActionsDiv.style.display = 'flex';
+    };
+
+    const cancelEditButton = document.createElement('button');
+    cancelEditButton.textContent = 'Cancel';
+    cancelEditButton.onclick = function () {
+        editInputDiv.remove();
+        commentActionsDiv.style.display = 'flex';
+    };
+
+    editInputDiv.appendChild(editTextarea);
+    editInputDiv.appendChild(saveEditButton);
+    editInputDiv.appendChild(cancelEditButton);
+
+    commentDiv.appendChild(editInputDiv);
+    commentActionsDiv.style.display = 'none';
+}
+
+function updateReplyCount(commentDiv) {
+    const replyCount = commentDiv.querySelectorAll('.comment-body').length - 1;
+    let replyCountSpan = commentDiv.querySelector('.reply-count');
+
+    if (!replyCountSpan) {
+        replyCountSpan = document.createElement('span');
+        replyCountSpan.classList.add('reply-count');
+        commentDiv.querySelector('.comment-actions').appendChild(replyCountSpan);
+    }
+
+    replyCountSpan.textContent = `${replyCount} replies`;
 }

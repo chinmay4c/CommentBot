@@ -1,22 +1,24 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f7f7f7;
     margin: 0;
     padding: 20px;
 }
 
 .comments-container {
-    max-width: 600px;
+    max-width: 700px;
     margin: 0 auto;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
     margin-bottom: 20px;
-    color: #333;
+    color: #444444;
+    text-align: center;
+    font-size: 24px;
 }
 
 #comments-list {
@@ -24,8 +26,9 @@ h2 {
 }
 
 .comment {
-    border-bottom: 1px solid #ddd;
-    padding: 10px 0;
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    position: relative;
 }
 
 .comment:last-child {
@@ -36,37 +39,47 @@ h2 {
     margin-bottom: 10px;
 }
 
-.comment .reply-input {
+.comment .comment-body p {
+    margin: 0;
+    padding: 5px;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    padding-left: 10px;
+}
+
+.comment .comment-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.comment-actions button,
+.comment-actions span {
+    background-color: transparent;
+    border: none;
+    color: #007BFF;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 5px;
+}
+
+.comment-actions button:hover,
+.comment-actions span:hover {
+    text-decoration: underline;
+}
+
+.reply-input {
     margin-top: 10px;
     display: none;
-}
-
-.comment textarea {
-    width: 100%;
-    padding: 10px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-}
-
-.comment button {
-    margin-top: 5px;
-    padding: 5px 10px;
-    border: none;
-    background-color: #007BFF;
-    color: white;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-.comment button:hover {
-    background-color: #0056b3;
+    margin-left: 20px;
 }
 
 .comment-input textarea {
     width: 100%;
-    padding: 10px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #cccccc;
+    font-size: 16px;
 }
 
 .comment-input button {
@@ -76,9 +89,38 @@ h2 {
     background-color: #28a745;
     color: white;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 8px;
+    font-size: 16px;
+    width: 100%;
 }
 
 .comment-input button:hover {
     background-color: #218838;
+}
+
+.edit-input textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #cccccc;
+}
+
+.edit-input button {
+    margin-top: 5px;
+    padding: 5px 15px;
+    border: none;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.edit-input button:hover {
+    background-color: #0056b3;
+}
+
+.edit-input,
+.edit-actions {
+    display: flex;
+    gap: 10px;
 }
